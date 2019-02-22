@@ -7,9 +7,12 @@ import Paper from '@material-ui/core/Paper';
 
 const styles = theme => ({
     root: {
-      paddingTop: theme.spacing.unit * 2,
-      paddingBottom: theme.spacing.unit * 2,
+      padding: theme.spacing.unit,
       flexGrow: 1,
+      marginRight: 5,
+      marginBottom: 5,
+      opacity: 0.85,
+      textAlign: 'center'
     }
   });
 

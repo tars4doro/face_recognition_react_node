@@ -17,7 +17,8 @@ const styles = {
 
 const ImageRecognitionPage = ({ classes, fetchedImageStatus, 
                                 fetchedImageBlobObjURL, detectFaces, 
-                                latestImageDetectedFacesArray }) => {
+                                latestImageDetectedFacesArray,
+                                clearlatestImageDetectedFacesArray }) => {
     
     switch (fetchedImageStatus) {
       case 'loading': return (
@@ -47,8 +48,9 @@ const ImageRecognitionPage = ({ classes, fetchedImageStatus,
           <ImageCard 
             imageBlobURL={fetchedImageBlobObjURL}
             detectFaces={detectFaces}
-            latestImageDetectedFacesArray={latestImageDetectedFacesArray}>
-          </ImageCard>
+            latestImageDetectedFacesArray={latestImageDetectedFacesArray}
+            clearlatestImageDetectedFacesArray={clearlatestImageDetectedFacesArray}
+          />
         </React.Fragment> 
       );
       default:

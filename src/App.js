@@ -50,6 +50,7 @@ class App extends Component {
   //image URL input dialog handlers(using proxy to bypass CORS restrictions)
   fetchUserAddedImageURL = url => {
       this.setState({fetchedImageStatus: 'loading'});
+      
       fetch('https://cors-anywhere.herokuapp.com/'+url)
         .then(res => { 
           if (res.ok) 
@@ -70,6 +71,7 @@ class App extends Component {
   detectFaces = () => clarifaiApp.models.predict(FACE_DETECT_MODEL, this.state.latestImageSuccessURL)
   .then( res => this.setState({ latestImageDetectedFacesArray:res.outputs[0].data.regions}))
   .catch( (err) => console.log(err) );
+  clearlatestImageDetectedFacesArray = () => this.setState({latestImageDetectedFacesArray:[]});
 
 
 
@@ -102,7 +104,8 @@ class App extends Component {
                   fetchedImageStatus={this.state.fetchedImageStatus} 
                   fetchedImageBlobObjURL={this.state.fetchedImageBlobObjURL}
                   detectFaces={this.detectFaces}
-                  latestImageDetectedFacesArray={this.state.latestImageDetectedFacesArray}/>) }/>
+                  latestImageDetectedFacesArray={this.state.latestImageDetectedFacesArray}
+                  clearlatestImageDetectedFacesArray={this.clearlatestImageDetectedFacesArray}/>) }/>
               <Route path="*" component={HomePage} />
             </Switch>
         </MainGrid>

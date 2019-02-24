@@ -1,12 +1,15 @@
 import React from 'react';
-import ReactLoading from 'react-loading';
 import { withStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-let loadingColor = null;
-const styles = theme => (loadingColor = theme.palette.text.primary);
-  
-const LoadingAnimation = () => (
-    <ReactLoading type='bars' color={loadingColor} height={100} width={100} />
-);
+const styles = theme => ({
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+});
 
-export default withStyles(styles)(LoadingAnimation);
+const CircularIndeterminate = ({ classes }) => (
+      <CircularProgress className={classes.progress} color="secondary" />
+  );
+
+export default withStyles(styles)(CircularIndeterminate);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -8,13 +8,19 @@ import Button from '@material-ui/core/Button';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+import CircularIndeterminate from '../LoadingAnimation/LoadingAnimation';
+import Clarifai, { FACE_DETECT_MODEL } from  'clarifai';
+
+const clarifaiApp = new Clarifai.App({ apiKey: '79dfd295ef964eb5a8f4badbaaaf900d' });
 
 const styles = {
   card: {
     margin: '8px auto 8px'
   },
-  button: {
-    margin: '0 auto'
+  cardActionsClass: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
   },
   media: {
     // object-fit is not supported by IE 11.
@@ -42,21 +48,40 @@ const styles = {
   }
 };
 
-const ImgCard = ({ classes, imageBlobURL, detectFaces, latestImageDetectedFacesArray, clearlatestImageDetectedFacesArray}) => {
+class ImgCard extends Component { 
   
+  constructor (props) {
+    super(props);
+    this.state = {
+      detectionProgress: 'detecting',
+      latestUsedImageURL: '',
+      latestImageDetectedFacesArray:[]
+    }
+  }
+
+  //clarifai API face detection handler
+  detectFaces = () => { this.setState({detectionProgress: 'detecting'});
+                        clarifaiApp.models.predict(FACE_DETECT_MODEL, this.props.latestImageSuccessURL)
+                        .then( res => { if (res.outputs[0].data.regions.length) 
+                                          {this.setState({ latestImageDetectedFacesArray:res.outputs[0].data.regions, 
+                                                           detectionProgress: 'done', 
+                                                           latestUsedImageURL: this.props.latestImageSuccessURL });} 
+                                        else this.setState({detectionProgress: 'failed'}) })
+                        .catch( () => this.setState({ detectionProgress: 'failed' }) );
+  }
+
+  componentDidMount () { this.detectFaces(); }
+
+  shouldComponentUpdate () { return (this.state.detectionProgress === 'done') && ( this.state.latestUsedImageURL === this.props.latestImageSuccessURL) ? false : true };
+
+  render() {
+
+    const { classes, imageBlobURL } = this.props;
+    let { latestImageDetectedFacesArray, detectionProgress } = this.state;
+
     return (
     <React.Fragment>
     <Card className={classes.card} raised={true}>
-      <CardActions>
-        <Button 
-        className={classes.button} 
-        size='medium' 
-        variant='contained' 
-        color='secondary'
-        onClick={detectFaces}>
-          Start Detection
-        </Button>
-      </CardActions>
       <CardActionArea>
         <div>
           <CardMedia
@@ -67,7 +92,7 @@ const ImgCard = ({ classes, imageBlobURL, detectFaces, latestImageDetectedFacesA
             src={imageBlobURL}
             title='fetch result'
           />
-        {!!latestImageDetectedFacesArray.length 
+        {(detectionProgress === 'done') 
           && latestImageDetectedFacesArray.map(  
             ({ id, region_info: { bounding_box : { top_row, right_col, bottom_row, left_col  } } }) => {
       
@@ -85,13 +110,13 @@ const ImgCard = ({ classes, imageBlobURL, detectFaces, latestImageDetectedFacesA
         })}  
         </div>
       </CardActionArea>
-      {!!latestImageDetectedFacesArray.length && (
+      {(detectionProgress === 'done') && (
         <CardContent>
-          <Typography align='center' variant='h5'>
+          <Typography align='center' variant='h5' color='textPrimary'>
             {latestImageDetectedFacesArray.length} faces detected!
           </Typography>
           <Paper className={classes.canvasList}>
-            {!!latestImageDetectedFacesArray.length && latestImageDetectedFacesArray.map( ({ id, region_info: { bounding_box : { top_row, right_col, bottom_row, left_col  } } }) => {
+            {latestImageDetectedFacesArray.map( ({ id, region_info: { bounding_box : { top_row, right_col, bottom_row, left_col  } } }) => {
             
             let detectImage = document.getElementById('detection-image'), scrollHeight, scrollWidth, naturalHeight, naturalWidth;
             if (detectImage) ({ scrollHeight, scrollWidth, naturalHeight, naturalWidth } = detectImage);
@@ -104,16 +129,42 @@ const ImgCard = ({ classes, imageBlobURL, detectFaces, latestImageDetectedFacesA
                     height={(bottom_row - top_row) * scrollHeight}
                     ref={(canv) => { if (canv) { canv.getContext('2d').drawImage(document.getElementById('detection-image'),
                       left_col * naturalWidth, top_row * naturalHeight, (right_col - left_col) * naturalWidth, (bottom_row - top_row) * naturalHeight,
-                      0, 0, canv.width, canv.height);
-                    } else (!!latestImageDetectedFacesArray.length && clearlatestImageDetectedFacesArray()) }}>
+                      0, 0, canv.width, canv.height); } 
+                      }}>
                    </canvas>;
             })}
           </Paper>
         </CardContent>
-        )}
+      )}
+      {(detectionProgress === 'failed') && (
+        <CardActions className={classes.cardActionsClass}>
+          <Typography align='center' color='textPrimary' variant='h5'>
+            There are no faces on the image or Detection error occured!
+          </Typography>
+          <Typography variant='subtitle1' color='textPrimary' align='center'>
+            Please add an image containing faces of people or press Detect Again button.
+          </Typography>
+          <Button 
+          className={classes.button} 
+          size='medium' 
+          variant='contained' 
+          color='secondary'
+          onClick={this.detectFaces}>
+            Detect Again
+          </Button>
+        </CardActions>
+      )}
+      {(detectionProgress === 'detecting') && (
+        <CardContent>
+          <Typography align='center' color='textPrimary' variant='h5'>
+          <CircularIndeterminate /> Processing image. Please wait...
+          </Typography>
+        </CardContent>
+      )}
     </Card>
     </React.Fragment>
   );
+}
 }
 
 export default withStyles(styles)(ImgCard);

@@ -39,11 +39,28 @@ const styles = theme => ({
   }
 });
 
-const MenuAppBar = (props) => {
+class MenuAppBar extends React.Component {
 
-  const { classes, toggleDrawer, auth, authIconAnchor, handleAuthClose, 
-          handleAuthMenu, handleAuthChange, toggleTheme } = props;
-  const open = !!authIconAnchor;
+  constructor(props) {
+    super(props);
+    this.state = {
+      authIconAnchor: null
+  }}
+
+  //handle auth profile icon menu 
+  handleAuthMenu = event => this.setState({ authIconAnchor: event.currentTarget });
+  handleAuthClose = () => this.setState({ authIconAnchor: null });
+
+
+  render() {
+
+    const { classes, toggleDrawer, auth, 
+            handleAuthChange, toggleTheme } = this.props;
+    const { handleAuthMenu, handleAuthClose } = this;
+    const { authIconAnchor } = this.state;
+
+    const open = !!authIconAnchor;
+
   return (
     <AppBar className={classes.root}>
       <Toolbar>
@@ -92,17 +109,19 @@ const MenuAppBar = (props) => {
           </div>
         )}
         <FormGroup>
-          <FormControlLabel
-          labelPlacement='start'
-          classes={{ label: classes.labelFormControl }}
-          label={auth ? 'Logout' : 'Login'}
-          control={
-             <Switch 
-             checked={auth} 
-             onChange={handleAuthChange} 
-             aria-label='LoginSwitch' />
-          }
-          />
+          
+            <FormControlLabel
+            labelPlacement='start'
+            classes={{ label: classes.labelFormControl }}
+            label={auth ? 'Logout' : 'Login'}
+            control={
+              <NavLink to={auth ? '/' : '/login'}>
+                <Switch 
+                checked={auth}
+                aria-label='LoginSwitch' />
+              </NavLink>  
+            }
+            />
         </FormGroup>
         <IconButton onClick={toggleTheme} 
         className={classes.themeIcon} 
@@ -113,6 +132,7 @@ const MenuAppBar = (props) => {
       </Toolbar>
     </AppBar>
   );
+  }
 }
 
 export default withStyles(styles)(MenuAppBar);

@@ -6,14 +6,19 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ThemeIcon from '@material-ui/icons/WbIncandescentOutlined';
+import HomeIcon from '@material-ui/icons/Home';
+import ImageSearchIcon from '@material-ui/icons/ImageSearch';
+import RegisterIcon from '@material-ui/icons/HowToReg';
+import LoginIcon from '@material-ui/icons/AccountBox';
+
 
 const styles = {
   list: {
     width: 250,
   }  
 };
-const listItems = [['Home Page', ThemeIcon, '/'], ['Image Recognition', ThemeIcon, '/image-recognition'], ['3d', ThemeIcon, '/'], ['4th', ThemeIcon, '/']];
+const listItems = [['Home', HomeIcon, '/'], ['Image Recognition', ImageSearchIcon, '/image-recognition'], 
+                   ['Login', LoginIcon, '/login'], ['Register', RegisterIcon, '/register']];
 
 const MyDrawer = (props) => {
   

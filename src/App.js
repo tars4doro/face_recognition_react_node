@@ -5,10 +5,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import MainGrid from './Components/MainGrid/MainGrid';
 import HomePage from './Components/HomePage/HomePage';
 import ProfilePage from './Components/ProfilePage/ProfilePage';
+import RegisterPage from './Components/RegisterPage/RegisterPage';
+import LoginPage from './Components/LoginPage/LoginPage';
 import ImageRecognitionPage from './Components/ImageRecognitionPage/ImageRecognitionPage';
-import Clarifai, { FACE_DETECT_MODEL } from  'clarifai';
-
-const clarifaiApp = new Clarifai.App({ apiKey: '79dfd295ef964eb5a8f4badbaaaf900d' });
 
 const themeIsDark = createMuiTheme({
   palette: { type: 'dark' },
@@ -24,14 +23,12 @@ class App extends Component {
     super();  
     this.state = {
       isThemeDark: true,
-      auth: false,
-      authIconAnchor: null,
+      auth: true,
       isDrawerOpen: false,
       isAddImageDialogOpen: false,
       fetchedImageStatus: '',
       fetchedImageBlobObjURL: null,
       latestImageSuccessURL: '',
-      latestImageDetectedFacesArray:[]
     };
   }
 
@@ -39,10 +36,8 @@ class App extends Component {
   toggleDrawer = () => !this.state.isDrawerOpen ? this.setState({isDrawerOpen: true}) : this.setState({isDrawerOpen: false});
   drawerClick = () => this.toggleDrawer();
 
-  //appbar login and profile handlers
+  //appbar login/logout handler
   handleAuthChange = event => this.setState({ auth: event.target.checked });
-  handleAuthMenu = event => this.setState({ authIconAnchor: event.currentTarget });
-  handleAuthClose = () => this.setState({ authIconAnchor: null });
 
   //theme switcher
   toggleTheme = () => this.state.isThemeDark ? this.setState({isThemeDark: false}) : this.setState({isThemeDark: true});
@@ -50,7 +45,6 @@ class App extends Component {
   //image URL input dialog handlers(using proxy to bypass CORS restrictions)
   fetchUserAddedImageURL = url => {
       this.setState({fetchedImageStatus: 'loading'});
-      
       fetch('https://cors-anywhere.herokuapp.com/'+url)
         .then(res => { 
           if (res.ok) 
@@ -66,14 +60,6 @@ class App extends Component {
       this.toggleAddImageDialog();    
   };
   toggleAddImageDialog = () => !this.state.isAddImageDialogOpen ? this.setState({isAddImageDialogOpen: true}) : this.setState({isAddImageDialogOpen: false});
-
-  //clarifai API face detection handler
-  detectFaces = () => clarifaiApp.models.predict(FACE_DETECT_MODEL, this.state.latestImageSuccessURL)
-  .then( res => this.setState({ latestImageDetectedFacesArray:res.outputs[0].data.regions}))
-  .catch( (err) => console.log(err) );
-  clearlatestImageDetectedFacesArray = () => this.setState({latestImageDetectedFacesArray:[]});
-
-
 
 
   render() {
@@ -96,16 +82,14 @@ class App extends Component {
             <Switch>
               <Route path='/' exact component={HomePage} />
               <Route path='/profile' component={ProfilePage} />
-              <Route path='/register' component={HomePage} />
-              <Route path='/login' component={HomePage} />
+              <Route path='/register' component={RegisterPage} />
+              <Route path='/login' component={LoginPage} />
               <Route 
                 path='/image-recognition' 
                 render={ () => (<ImageRecognitionPage 
                   fetchedImageStatus={this.state.fetchedImageStatus} 
                   fetchedImageBlobObjURL={this.state.fetchedImageBlobObjURL}
-                  detectFaces={this.detectFaces}
-                  latestImageDetectedFacesArray={this.state.latestImageDetectedFacesArray}
-                  clearlatestImageDetectedFacesArray={this.clearlatestImageDetectedFacesArray}/>) }/>
+                  latestImageSuccessURL={this.state.latestImageSuccessURL}/>) }/>
               <Route path="*" component={HomePage} />
             </Switch>
         </MainGrid>

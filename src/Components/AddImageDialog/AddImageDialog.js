@@ -16,7 +16,7 @@ class AddImageDialog extends Component {
         }
     };
 
-    //TODO regexp validation
+    //TODO regexp validation or validation with npm react-material-ui-form-validator 
     textfieldIsNotEmptyValidation = event => {
         if (event.target.value && this.state.submitDisable) this.setState({submitDisable: false});
         if (!event.target.value && !this.state.submitDisable) this.setState({submitDisable: true});

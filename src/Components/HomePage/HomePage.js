@@ -26,7 +26,7 @@ return (
                 Welcome to the Face Regognition App
               </Typography>
               <Typography component="p">
-                You have to <NavLink to='/login'>login</NavLink> or <NavLink to='register'>register</NavLink> to get personalized experience
+                You have to login or register to get personalized experience
               </Typography>
             </Paper>
         </Grid>
@@ -59,7 +59,7 @@ return (
                 Welcome to the Face Regognition App
               </Typography>
               <Typography component="p">
-                You have to <NavLink to='/login'>login</NavLink> or <NavLink to='register'>register</NavLink> to get personalized experience
+              You have to login or register to get personalized experience
               </Typography>
             </Paper>
         </Grid>

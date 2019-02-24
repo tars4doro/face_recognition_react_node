@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
+import CircularIndeterminate from '../LoadingAnimation/LoadingAnimation';
 import ImageCard from '../ImageCard/ImageCard';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
@@ -16,16 +16,14 @@ const styles = {
 };
 
 const ImageRecognitionPage = ({ classes, fetchedImageStatus, 
-                                fetchedImageBlobObjURL, detectFaces, 
-                                latestImageDetectedFacesArray,
-                                clearlatestImageDetectedFacesArray }) => {
+                                fetchedImageBlobObjURL, latestImageSuccessURL }) => {
     
     switch (fetchedImageStatus) {
       case 'loading': return (
         <Grid item xs={12}>
           <Paper elevation={3} className={classes.root}>
             <Typography variant='h4' color='textPrimary' align='center'>Fetching Image</Typography>
-            <LoadingAnimation />
+            <CircularIndeterminate />
           </Paper>
         </Grid>
       );
@@ -42,14 +40,12 @@ const ImageRecognitionPage = ({ classes, fetchedImageStatus,
           <Grid item xs={12}>
             <Paper elevation={3} className={classes.root}>
               <Typography variant='h4' color='textPrimary' align='center'>Image Fetched! </Typography>
-              <Typography variant='subtitle1' color='textPrimary' align='center'>Please press Detect button to start recognition</Typography>
+              <Typography variant='subtitle1' color='textPrimary' align='center'>The recognition will start automatically</Typography>
             </Paper>
           </Grid>
           <ImageCard 
             imageBlobURL={fetchedImageBlobObjURL}
-            detectFaces={detectFaces}
-            latestImageDetectedFacesArray={latestImageDetectedFacesArray}
-            clearlatestImageDetectedFacesArray={clearlatestImageDetectedFacesArray}
+            latestImageSuccessURL={latestImageSuccessURL}
           />
         </React.Fragment> 
       );
